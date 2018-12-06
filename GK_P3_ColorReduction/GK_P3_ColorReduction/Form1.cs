@@ -23,9 +23,9 @@ namespace GK_P3_ColorReduction
             };
         static double[,] D3 = new double[3, 3]
             {
-                { 6/9, 8/9, 4/9 },
-                { 1/9, 0/9, 3/9 },
-                { 5/9, 2/9, 7/9 }
+                { 6d/9, 8d/9, 4d/9 },
+                { 1d/9, 0d/9, 3d/9 },
+                { 5d/9, 2d/9, 7d/9 }
             };
         
         public Form1()
@@ -153,10 +153,16 @@ namespace GK_P3_ColorReduction
             double[,] DB = CalcD(nB);
             nB = DB.GetLength(0);
 
-            Color color;
+            //List<double> DR2 = new List<double>();
+            //foreach (double d in DR)
+            //    DR2.Add(d * nR * nR);
+            //DR2.Sort();
             
+            Color color;
+
             //double  reR, reG, reB;
-            double coef = 256d / 255;
+            // Potrzebny?
+            //double coef = 256d / 255;
             int R, G, B;
 
             int[] tresholdsR = new int[Kr];
@@ -202,19 +208,27 @@ namespace GK_P3_ColorReduction
                     }
 
                     // To na pewno uporządkowane drżenia?
-                    //R = (int)(color.R + coef * 256 / (Kr - 1) * (DR[xR, yR] - 1d / 2));
-                    //G = (int)(color.G + coef * 256 / (Kg - 1) * (DG[xG, yG] - 1d / 2));
-                    //B = (int)(color.B + coef * 256 / (Kb - 1) * (DB[xB, yB] - 1d / 2));
+                    //R = (int)(color.R + coef * 256d / (Kr - 1) * (DR[xR, yR] - 1d / 2));
+                    //G = (int)(color.G + coef * 256d / (Kg - 1) * (DG[xG, yG] - 1d / 2));
+                    //B = (int)(color.B + coef * 256d / (Kb - 1) * (DB[xB, yB] - 1d / 2));
 
-                    R = DoNotOverflow((int)(color.R + coef * 256 / (Kr - 1) * (DR[xR, yR])));
-                    G = DoNotOverflow((int)(color.G + coef * 256 / (Kg - 1) * (DG[xG, yG])));
-                    B = DoNotOverflow((int)(color.B + coef * 256 / (Kb - 1) * (DB[xB, yB])));
+                    //R = DoNotOverflow((int)(color.R + 256d / (Kr - 1) * (DR[xR, yR])));
+                    //G = DoNotOverflow((int)(color.G + 256d / (Kg - 1) * (DG[xG, yG])));
+                    //B = DoNotOverflow((int)(color.B + 256d / (Kb - 1) * (DB[xB, yB])));
+
+                    // R, G, B przetrzymują indeks koloru w tresholds
+                    R = color.R / (tresholdsR[1] - tresholdsR[0]);
+                    G = color.G / (tresholdsG[1] - tresholdsG[0]);
+                    B = color.B / (tresholdsB[1] - tresholdsB[0]);
+
+                    if ((color.R - tresholdsR[R]) / (256d / (Kr - 1)) > DR[xR, yR])
+                        R++;
+                    if ((color.G - tresholdsG[G]) / (256d / (Kg - 1d)) > DG[xG, yG])
+                        G++;
+                    if ((color.B - tresholdsB[B]) / (256d / (Kb - 1d)) > DB[xB, yB])
+                        B++;
 
 
-                    R = ClosestColor(R, tresholdsR);
-                    G = ClosestColor(G, tresholdsG);
-                    B = ClosestColor(B, tresholdsB);
-                    
                     //B = (int)((double)(K - 1) * color.B / (n * n));
 
                     //reR = color.R % (n * n);
@@ -226,7 +240,7 @@ namespace GK_P3_ColorReduction
                     //if (reG > D[x, y] && G < K - 1) G += 1;
                     //if (reB > D[x, y] && B < K - 1) B += 1;
 
-                    bitmap.SetPixel(i, j, Color.FromArgb(R,G,B));
+                    bitmap.SetPixel(i, j, Color.FromArgb(tresholdsR[R],tresholdsG[G],tresholdsB[B]));
 
                 }
             }
@@ -292,14 +306,7 @@ namespace GK_P3_ColorReduction
 
             return D2;
         }
-
-        public int ClosestColor(int color, int[] tresholds)
-        {
-            float x = color / (tresholds[1]-tresholds[0]);
-
-            return tresholds[(int)Math.Round(x)];
-        }
-
+        
         public Bitmap OpenImage()
         {
             using (OpenFileDialog dlg = new OpenFileDialog())
