@@ -37,7 +37,7 @@
             this.ResultPB.BackColor = System.Drawing.Color.White;
             this.ResultPB.Location = new System.Drawing.Point(13, 13);
             this.ResultPB.Name = "ResultPB";
-            this.ResultPB.Size = new System.Drawing.Size(320, 240);
+            this.ResultPB.Size = new System.Drawing.Size(640, 480);
             this.ResultPB.TabIndex = 0;
             this.ResultPB.TabStop = false;
             // 
@@ -45,8 +45,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(343, 262);
+            this.ClientSize = new System.Drawing.Size(664, 501);
             this.Controls.Add(this.ResultPB);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -59,6 +60,6 @@
 
         #endregion
 
-        private System.Windows.Forms.PictureBox ResultPB;
+        public System.Windows.Forms.PictureBox ResultPB;
     }
 }

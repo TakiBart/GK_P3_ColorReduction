@@ -27,6 +27,11 @@ namespace GK_P3_ColorReduction
             ResultPB.Image = image;
             this.Text = algName + ", K = " + K.ToString();
         }
+
+        public void SetImage(Image image)
+        {
+            ResultPB.Image = image;
+        }
         
     }
 }

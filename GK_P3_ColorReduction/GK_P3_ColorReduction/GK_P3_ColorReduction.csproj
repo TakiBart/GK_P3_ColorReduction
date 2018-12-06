@@ -92,5 +92,8 @@
   <ItemGroup>
     <None Include="Resources\paris-eiffel.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\TODO.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
