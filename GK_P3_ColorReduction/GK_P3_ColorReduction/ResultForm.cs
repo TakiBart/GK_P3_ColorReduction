@@ -12,6 +12,7 @@ namespace GK_P3_ColorReduction
 {
     public partial class ResultForm : Form
     {
+        public Image workImage;
         public ResultForm()
         {
             InitializeComponent();
@@ -32,6 +33,15 @@ namespace GK_P3_ColorReduction
         {
             ResultPB.Image = image;
         }
-        
+
+        private void ResultForm_ResizeEnd(object sender, EventArgs e)
+        {
+            ResultPB.Image = Form1.ScaleImage(workImage, ResultPB.Width, ResultPB.Height);
+        }
+
+        private void ResultForm_ResizeBegin(object sender, EventArgs e)
+        {
+            workImage = ResultPB.Image;
+        }
     }
 }

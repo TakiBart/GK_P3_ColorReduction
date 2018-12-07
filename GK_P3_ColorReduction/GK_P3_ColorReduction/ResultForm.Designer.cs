@@ -35,9 +35,10 @@
             // ResultPB
             // 
             this.ResultPB.BackColor = System.Drawing.Color.White;
-            this.ResultPB.Location = new System.Drawing.Point(13, 13);
+            this.ResultPB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ResultPB.Location = new System.Drawing.Point(0, 0);
             this.ResultPB.Name = "ResultPB";
-            this.ResultPB.Size = new System.Drawing.Size(640, 480);
+            this.ResultPB.Size = new System.Drawing.Size(664, 501);
             this.ResultPB.TabIndex = 0;
             this.ResultPB.TabStop = false;
             // 
@@ -53,6 +54,8 @@
             this.MaximizeBox = false;
             this.Name = "ResultForm";
             this.Text = "ResultForm";
+            this.ResizeBegin += new System.EventHandler(this.ResultForm_ResizeBegin);
+            this.ResizeEnd += new System.EventHandler(this.ResultForm_ResizeEnd);
             ((System.ComponentModel.ISupportInitialize)(this.ResultPB)).EndInit();
             this.ResumeLayout(false);
 

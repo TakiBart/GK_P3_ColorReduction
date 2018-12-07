@@ -42,6 +42,10 @@
             this.KNUD = new System.Windows.Forms.NumericUpDown();
             this.GenerateBtn = new System.Windows.Forms.Button();
             this.WorkImagePB = new System.Windows.Forms.PictureBox();
+            this.ErrPropFiltGB = new System.Windows.Forms.GroupBox();
+            this.FloydSteinbergRB = new System.Windows.Forms.RadioButton();
+            this.BurkesRB = new System.Windows.Forms.RadioButton();
+            this.StuckyRB = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -56,6 +60,7 @@
             this.KGB.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.KNUD)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.WorkImagePB)).BeginInit();
+            this.ErrPropFiltGB.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -69,6 +74,7 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.splitContainer1.Panel1.Controls.Add(this.ErrPropFiltGB);
             this.splitContainer1.Panel1.Controls.Add(this.KBGB);
             this.splitContainer1.Panel1.Controls.Add(this.KGGB);
             this.splitContainer1.Panel1.Controls.Add(this.KRGB);
@@ -246,15 +252,57 @@
             // 
             // WorkImagePB
             // 
-            this.WorkImagePB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.WorkImagePB.BackColor = System.Drawing.Color.White;
-            this.WorkImagePB.Location = new System.Drawing.Point(3, 3);
+            this.WorkImagePB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.WorkImagePB.Location = new System.Drawing.Point(0, 0);
             this.WorkImagePB.Name = "WorkImagePB";
-            this.WorkImagePB.Size = new System.Drawing.Size(634, 480);
+            this.WorkImagePB.Size = new System.Drawing.Size(657, 493);
             this.WorkImagePB.TabIndex = 0;
             this.WorkImagePB.TabStop = false;
+            // 
+            // ErrPropFiltGB
+            // 
+            this.ErrPropFiltGB.Controls.Add(this.StuckyRB);
+            this.ErrPropFiltGB.Controls.Add(this.BurkesRB);
+            this.ErrPropFiltGB.Controls.Add(this.FloydSteinbergRB);
+            this.ErrPropFiltGB.Location = new System.Drawing.Point(15, 210);
+            this.ErrPropFiltGB.Name = "ErrPropFiltGB";
+            this.ErrPropFiltGB.Size = new System.Drawing.Size(129, 94);
+            this.ErrPropFiltGB.TabIndex = 7;
+            this.ErrPropFiltGB.TabStop = false;
+            this.ErrPropFiltGB.Text = "Filtry propagacji błędu";
+            // 
+            // FloydSteinbergRB
+            // 
+            this.FloydSteinbergRB.AutoSize = true;
+            this.FloydSteinbergRB.Checked = true;
+            this.FloydSteinbergRB.Location = new System.Drawing.Point(7, 20);
+            this.FloydSteinbergRB.Name = "FloydSteinbergRB";
+            this.FloydSteinbergRB.Size = new System.Drawing.Size(98, 17);
+            this.FloydSteinbergRB.TabIndex = 0;
+            this.FloydSteinbergRB.TabStop = true;
+            this.FloydSteinbergRB.Text = "Floyd Steinberg";
+            this.FloydSteinbergRB.UseVisualStyleBackColor = true;
+            // 
+            // BurkesRB
+            // 
+            this.BurkesRB.AutoSize = true;
+            this.BurkesRB.Location = new System.Drawing.Point(7, 43);
+            this.BurkesRB.Name = "BurkesRB";
+            this.BurkesRB.Size = new System.Drawing.Size(58, 17);
+            this.BurkesRB.TabIndex = 1;
+            this.BurkesRB.Text = "Burkes";
+            this.BurkesRB.UseVisualStyleBackColor = true;
+            // 
+            // StuckyRB
+            // 
+            this.StuckyRB.AutoSize = true;
+            this.StuckyRB.Location = new System.Drawing.Point(7, 65);
+            this.StuckyRB.Name = "StuckyRB";
+            this.StuckyRB.Size = new System.Drawing.Size(58, 17);
+            this.StuckyRB.TabIndex = 2;
+            this.StuckyRB.Text = "Stucky";
+            this.StuckyRB.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -281,6 +329,8 @@
             this.KGB.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.KNUD)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.WorkImagePB)).EndInit();
+            this.ErrPropFiltGB.ResumeLayout(false);
+            this.ErrPropFiltGB.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -301,6 +351,10 @@
         private System.Windows.Forms.NumericUpDown KGNUD;
         private System.Windows.Forms.GroupBox KRGB;
         private System.Windows.Forms.NumericUpDown KRNUD;
+        private System.Windows.Forms.GroupBox ErrPropFiltGB;
+        private System.Windows.Forms.RadioButton StuckyRB;
+        private System.Windows.Forms.RadioButton BurkesRB;
+        private System.Windows.Forms.RadioButton FloydSteinbergRB;
     }
 }
 

@@ -66,24 +66,24 @@ namespace GK_P3_ColorReduction
         {
             ResultForm rf = new ResultForm();
             Image image = WorkImagePB.Image;
-
+            
             switch (AlgorithmCB.Text)
             {
                 case "Rozproszenie średnie":
-                    image = AverageDithering(WorkImagePB.Image, (int)KNUD.Value);
+                    image = AverageDithering(WorkImagePB.Image, (int)KRNUD.Value, (int)KGNUD.Value, (int)KBNUD.Value);
                     KNUD.Value = 2;
                     break;
 
                 case "Uporządkowane drżenie (losowe)":
-                    image = OrderedDitheringRandom(WorkImagePB.Image, (int)KRNUD.Value, (int)KGNUD.Value, (int)KBNUD.Value, true);
+                    image = OrderedDithering(WorkImagePB.Image, (int)KRNUD.Value, (int)KGNUD.Value, (int)KBNUD.Value, true);
                     break;
 
                 case "Uporządkowane drżenie (pozycja piksela)":
-                    image = OrderedDitheringRandom(WorkImagePB.Image, (int)KRNUD.Value, (int)KGNUD.Value, (int)KBNUD.Value, false);
+                    image = OrderedDithering(WorkImagePB.Image, (int)KRNUD.Value, (int)KGNUD.Value, (int)KBNUD.Value, false);
                     break;
 
                 case "Propagacja błędu":
-                    image = ErrorPropagation(WorkImagePB.Image, (int)KNUD.Value);
+                    image = ErrorPropagation(WorkImagePB.Image, (int)KRNUD.Value, (int)KGNUD.Value, (int)KBNUD.Value);
                     break;
 
                 case "Algorytm popularnościowy":
@@ -97,74 +97,41 @@ namespace GK_P3_ColorReduction
             }
 
             rf.SetImage(ScaleImage(image, rf.ResultPB.Width, rf.ResultPB.Height));
-            if(AlgorithmCB.Text == "Rozproszenie średnie")
+            if(AlgorithmCB.Text == "Algorytm popularnościowy")
                 rf.Text = AlgorithmCB.Text + ", K: " + ((int)KNUD.Value).ToString();
             else
             rf.Text = AlgorithmCB.Text + ", Kr: " + ((int)KRNUD.Value).ToString() + ", Kg: " + ((int)KGNUD.Value).ToString() + ", Kb: " + ((int)KBNUD.Value).ToString();
             rf.Show();
         }
         
-        public Image AverageDithering(Image image, int K)
+        public Image AverageDithering(Image image, int Kr, int Kg, int Kb)
         {
             Bitmap bitmap = new Bitmap(image);
-            float brightness = 0, treshold;
 
-            for (int i = 0; i < bitmap.Width; i++)
-            {
-                for (int j = 0; j < bitmap.Height; j++)
-                {
-                    brightness += bitmap.GetPixel(i, j).GetBrightness();
-                }
-            }
-            treshold = brightness / (bitmap.Width * bitmap.Height);
+            //float brightness = 0, treshold;
+            //for (int i = 0; i < bitmap.Width; i++)
+            //{
+            //    for (int j = 0; j < bitmap.Height; j++)
+            //    {
+            //        brightness += bitmap.GetPixel(i, j).GetBrightness();
+            //    }
+            //}
+            //treshold = brightness / (bitmap.Width * bitmap.Height);
 
-            for (int i = 0; i < bitmap.Width; i++)
-            {
-                for (int j = 0; j < bitmap.Height; j++)
-                {
-                    brightness = bitmap.GetPixel(i, j).GetBrightness();
-                    if (brightness < treshold)
-                        bitmap.SetPixel(i, j, Color.Black);
-                    else
-                        bitmap.SetPixel(i, j, Color.White);
-                }
-            }
+            //for (int i = 0; i < bitmap.Width; i++)
+            //{
+            //    for (int j = 0; j < bitmap.Height; j++)
+            //    {
+            //        brightness = bitmap.GetPixel(i, j).GetBrightness();
+            //        if (brightness < treshold)
+            //            bitmap.SetPixel(i, j, Color.Black);
+            //        else
+            //            bitmap.SetPixel(i, j, Color.White);
+            //    }
+            //}
 
-            return bitmap;
-        }
-        public Image OrderedDitheringRandom(Image image, int Kr, int Kg, int Kb, bool isRandom)
-        {
-            Bitmap bitmap = new Bitmap(image);
-            Random r = new Random();
-            int xR, xG, xB, yR, yG, yB;
-
-            double nRTemp = 16 * Math.Pow(Kr - 1, -1d / 2);
-            int nR = (int)nRTemp + 1;
-            double[,] DR = CalcD(nR);
-            nR = DR.GetLength(0);
-
-            double nGTemp = 16 * Math.Pow(Kg - 1, -1d / 2);
-            int nG = (int)nGTemp + 1;
-            double[,] DG = CalcD(nG);
-            nG = DG.GetLength(0);
-
-            double nBTemp = 16 * Math.Pow(Kb - 1, -1d / 2);
-            int nB = (int)nBTemp + 1;
-            double[,] DB = CalcD(nB);
-            nB = DB.GetLength(0);
-
-            //List<double> DR2 = new List<double>();
-            //foreach (double d in DR)
-            //    DR2.Add(d * nR * nR);
-            //DR2.Sort();
-            
             Color color;
-
-            //double  reR, reG, reB;
-            // Potrzebny?
-            //double coef = 256d / 255;
-            int R, G, B;
-
+            int iR, iG, iB;
             int[] tresholdsR = new int[Kr];
             int[] tresholdsG = new int[Kg];
             int[] tresholdsB = new int[Kb];
@@ -183,6 +150,66 @@ namespace GK_P3_ColorReduction
                 tresholdsB[i] = (int)(i * (256d / (Kb - 1)) - 1);
 
 
+            for (int i = 0; i < bitmap.Width; i++)
+            {
+                for (int j = 0; j < bitmap.Height; j++)
+                {
+                    color = bitmap.GetPixel(i, j);
+
+                    iR = (int)Math.Round((double)color.R / (tresholdsR[1] - tresholdsR[0]));
+                    iG = (int)Math.Round((double)color.G / (tresholdsG[1] - tresholdsG[0]));
+                    iB = (int)Math.Round((double)color.B / (tresholdsB[1] - tresholdsB[0]));
+
+                    bitmap.SetPixel(i, j, Color.FromArgb(tresholdsR[iR], tresholdsG[iG], tresholdsB[iB]));
+                }
+            }
+            
+            return bitmap;
+        }
+
+        public Image OrderedDithering(Image image, int Kr, int Kg, int Kb, bool isRandom)
+        {
+            Bitmap bitmap = new Bitmap(image);
+            Random r = new Random();
+
+            int xR, xG, xB, yR, yG, yB;
+
+            double nRTemp = 16 * Math.Pow(Kr - 1, -1d / 2);
+            int nR = (int)nRTemp + 1;
+            double[,] DR = CalcD(nR);
+            nR = DR.GetLength(0);
+
+            double nGTemp = 16 * Math.Pow(Kg - 1, -1d / 2);
+            int nG = (int)nGTemp + 1;
+            double[,] DG = CalcD(nG);
+            nG = DG.GetLength(0);
+
+            double nBTemp = 16 * Math.Pow(Kb - 1, -1d / 2);
+            int nB = (int)nBTemp + 1;
+            double[,] DB = CalcD(nB);
+            nB = DB.GetLength(0);
+            
+            Color color;
+            
+            int iR, iG, iB;
+
+            int[] tresholdsR = new int[Kr];
+            int[] tresholdsG = new int[Kg];
+            int[] tresholdsB = new int[Kb];
+
+            tresholdsR[0] = 0;
+            tresholdsG[0] = 0;
+            tresholdsB[0] = 0;
+
+            for (int i = 1; i < Kr; i++)
+                tresholdsR[i] = (int)(i * (256d / (Kr - 1)) - 1);
+
+            for (int i = 1; i < Kg; i++)
+                tresholdsG[i] = (int)(i * (256d / (Kg - 1)) - 1);
+
+            for (int i = 1; i < Kb; i++)
+                tresholdsB[i] = (int)(i * (256d / (Kb - 1)) - 1);
+            
             for (int i = 0; i < bitmap.Width; i++)
             {
                 for (int j = 0; j < bitmap.Height; j++)
@@ -207,66 +234,185 @@ namespace GK_P3_ColorReduction
                         yB = j % nB;
                     }
 
-                    // To na pewno uporządkowane drżenia?
-                    //R = (int)(color.R + coef * 256d / (Kr - 1) * (DR[xR, yR] - 1d / 2));
-                    //G = (int)(color.G + coef * 256d / (Kg - 1) * (DG[xG, yG] - 1d / 2));
-                    //B = (int)(color.B + coef * 256d / (Kb - 1) * (DB[xB, yB] - 1d / 2));
+                    // iR, iG, iB przetrzymują indeks koloru w tresholds
+                    iR = color.R / (tresholdsR[1] - tresholdsR[0]);
+                    iG = color.G / (tresholdsG[1] - tresholdsG[0]);
+                    iB = color.B / (tresholdsB[1] - tresholdsB[0]);
 
-                    //R = DoNotOverflow((int)(color.R + 256d / (Kr - 1) * (DR[xR, yR])));
-                    //G = DoNotOverflow((int)(color.G + 256d / (Kg - 1) * (DG[xG, yG])));
-                    //B = DoNotOverflow((int)(color.B + 256d / (Kb - 1) * (DB[xB, yB])));
+                    if ((color.R - tresholdsR[iR]) / (256d / (Kr - 1)) > DR[xR, yR])
+                        iR++;
+                    if ((color.G - tresholdsG[iG]) / (256d / (Kg - 1d)) > DG[xG, yG])
+                        iG++;
+                    if ((color.B - tresholdsB[iB]) / (256d / (Kb - 1d)) > DB[xB, yB])
+                        iB++;
 
-                    // R, G, B przetrzymują indeks koloru w tresholds
-                    R = color.R / (tresholdsR[1] - tresholdsR[0]);
-                    G = color.G / (tresholdsG[1] - tresholdsG[0]);
-                    B = color.B / (tresholdsB[1] - tresholdsB[0]);
-
-                    if ((color.R - tresholdsR[R]) / (256d / (Kr - 1)) > DR[xR, yR])
-                        R++;
-                    if ((color.G - tresholdsG[G]) / (256d / (Kg - 1d)) > DG[xG, yG])
-                        G++;
-                    if ((color.B - tresholdsB[B]) / (256d / (Kb - 1d)) > DB[xB, yB])
-                        B++;
-
-
-                    //B = (int)((double)(K - 1) * color.B / (n * n));
-
-                    //reR = color.R % (n * n);
-                    //reG = color.G % (n * n);
-                    //reB = color.B % (n * n);
-
-                    //// To tylko dla K = 2
-                    //if (reR > D[x, y] && R < K - 1) R += 1;
-                    //if (reG > D[x, y] && G < K - 1) G += 1;
-                    //if (reB > D[x, y] && B < K - 1) B += 1;
-
-                    bitmap.SetPixel(i, j, Color.FromArgb(tresholdsR[R],tresholdsG[G],tresholdsB[B]));
-
+                    bitmap.SetPixel(i, j, Color.FromArgb(tresholdsR[iR], tresholdsG[iG], tresholdsB[iB]));
                 }
             }
             return bitmap;
         }
-        public Image OrderedDitheringPixelPosition(Image image, int K)
+        
+        public Image ErrorPropagation(Image image, int Kr, int Kg, int Kb)
         {
             Bitmap bitmap = new Bitmap(image);
 
-            //DO_YOUR_JOB
+            double[,] FloydSteinberg = new double[,]
+            {
+                {0,     0,     0     },
+                {0,     0,     7d/16 },
+                {3d/16, 5d/16, 1d/16 }
+            };
+
+            double[,] Burkes = new double[,]
+            {
+                {0,     0,     0,     0,     0     },
+                {0,     0,     0,     8d/32, 4d/32 },
+                {2d/32, 4d/32, 8d/32, 4d/32, 2d/32 }
+            };
+
+            double[,] Stucky = new double[,]
+            {
+                {0,     0,     0,     0,     0     },
+                {0,     0,     0,     0,     0     },
+                {0,     0,     0,     8d/42, 4d/42 },
+                {2d/42, 4d/42, 8d/42, 4d/42, 2d/42 },
+                {1d/42, 2d/42, 4d/42, 2d/42, 1d/42 }
+            };
+
+            double[,] filter;
+
+            if (FloydSteinbergRB.Checked)
+                filter = FloydSteinberg;
+            else if (BurkesRB.Checked)
+                filter = Burkes;
+            else
+                filter = Stucky;
+
+            double[,] propagationR = new double[bitmap.Width, bitmap.Height];
+            double[,] propagationG = new double[bitmap.Width, bitmap.Height];
+            double[,] propagationB = new double[bitmap.Width, bitmap.Height];
+
+            for (int i = 0; i < propagationR.GetLength(0); i++)
+                for (int j = 0; j < propagationR.GetLength(1); j++)
+                {
+                    propagationR[i, j] = 0;
+                    propagationG[i, j] = 0;
+                    propagationB[i, j] = 0;
+                }
+
+            Color color;
+            double erR, erG, erB;
+
+            int iR, iG, iB;
+            int[] tresholdsR = new int[Kr];
+            int[] tresholdsG = new int[Kg];
+            int[] tresholdsB = new int[Kb];
+            
+            tresholdsR[0] = 0;
+            tresholdsG[0] = 0;
+            tresholdsB[0] = 0;
+
+            for (int i = 1; i < Kr; i++)
+                tresholdsR[i] = (int)(i * (256d / (Kr - 1)) - 1);
+
+            for (int i = 1; i < Kg; i++)
+                tresholdsG[i] = (int)(i * (256d / (Kg - 1)) - 1);
+
+            for (int i = 1; i < Kb; i++)
+                tresholdsB[i] = (int)(i * (256d / (Kb - 1)) - 1);
+            
+            for (int i = 0; i < bitmap.Width; i++)
+            {
+                for (int j = 0; j < bitmap.Height; j++)
+                {
+                    color = bitmap.GetPixel(i, j);
+
+                    iR = (int)Math.Round((double)(color.R + propagationR[i, j]) / (tresholdsR[1] - tresholdsR[0]));
+                    iG = (int)Math.Round((double)(color.G + propagationG[i, j]) / (tresholdsG[1] - tresholdsG[0]));
+                    iB = (int)Math.Round((double)(color.B + propagationB[i, j]) / (tresholdsB[1] - tresholdsB[0]));
+
+                    if (iR >= tresholdsR.Length)
+                        iR = tresholdsR.Length - 1;
+                    else if (iR < 0)
+                        iR = 0;
+
+                    if (iG >= tresholdsG.Length)
+                        iG = tresholdsG.Length - 1;
+                    else if (iG < 0)
+                        iG = 0;
+
+                    if (iB >= tresholdsB.Length)
+                        iB = tresholdsB.Length - 1;
+                    else if (iB < 0)
+                        iB = 0;
+
+
+                    erR = color.R + propagationR[i,j] - tresholdsR[iR];
+                    erG = color.G + propagationG[i,j] - tresholdsG[iG];
+                    erB = color.B + propagationB[i,j] - tresholdsB[iB];
+
+                    for (int x = 0; x < filter.GetLength(0) && i + x < bitmap.Width; x++)
+                        for (int y = 0; y < filter.GetLength(1) && j + y < bitmap.Height; y++)
+                        {
+                            propagationR[i + x, j + y] += filter[x, y] * erR;
+                            propagationG[i + x, j + y] += filter[x, y] * erG;
+                            propagationB[i + x, j + y] += filter[x, y] * erB;
+
+                        }
+                    bitmap.SetPixel(i, j, Color.FromArgb(tresholdsR[iR], tresholdsG[iG], tresholdsB[iB]));
+                }
+            }
 
             return bitmap;
         }
-        public Image ErrorPropagation(Image image, int K)
-        {
-            Bitmap bitmap = new Bitmap(image);
 
-            //DO_YOUR_JOB
-
-            return bitmap;
-        }
         public Image Populistic(Image image, int K)
         {
             Bitmap bitmap = new Bitmap(image);
+            Color color;
 
-            //DO_YOUR_JOB
+            Dictionary<Color, int> colors = new Dictionary<Color, int>(256 * 256 * 256);
+
+            for (int r = 0; r < 256; r++)
+                for (int g = 0; g < 256; g++)
+                    for (int b = 0; b < 256; b++)
+                        colors.Add(Color.FromArgb(r, g, b), 0);
+
+            for (int i = 0; i < bitmap.Width; i++)
+                for (int j = 0; j < bitmap.Height; j++)
+                {
+                    color = bitmap.GetPixel(i, j);
+                    colors[Color.FromArgb(color.R, color.G, color.B)]++;
+                }
+            
+            Color[] tresholds = new Color[K];
+            
+            for (int i = 0; i < K; i++)
+            {
+                tresholds[i] = colors.Aggregate((x, y) => x.Value > y.Value ? x : y).Key; 
+                colors[tresholds[i]] = 0;
+            }
+
+            int iMin;
+            double min, temp;
+
+            for(int i =0;i<bitmap.Width;i++)
+                for(int j = 0; j < bitmap.Height; j++)
+                {
+                    color = bitmap.GetPixel(i, j);
+                    iMin = 0;
+                    min = Math.Sqrt((color.R - tresholds[0].R) * (color.R - tresholds[0].R) + (color.G - tresholds[0].G) * (color.G - tresholds[0].G) + (color.B - tresholds[0].B) * (color.B - tresholds[0].B));
+                    for(int k = 1; k< K; k++)
+                    {
+                        temp = Math.Sqrt((color.R - tresholds[k].R) * (color.R - tresholds[k].R) + (color.G - tresholds[k].G) * (color.G - tresholds[k].G) + (color.B - tresholds[k].B) * (color.B - tresholds[k].B));
+                        if (temp < min)
+                        {
+                            min = temp;
+                            iMin = k;
+                        }
+                    }
+                    bitmap.SetPixel(i, j, tresholds[iMin]);
+                }
 
             return bitmap;
         }
@@ -307,21 +453,6 @@ namespace GK_P3_ColorReduction
             return D2;
         }
         
-        public Bitmap OpenImage()
-        {
-            using (OpenFileDialog dlg = new OpenFileDialog())
-            {
-                dlg.Title = "Open Image";
-                dlg.Filter = "All files (*.*)|*.*";
-                dlg.InitialDirectory = Directory.GetCurrentDirectory();
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    return new Bitmap(dlg.FileName);
-                }
-            }
-            return new Bitmap(WorkImagePB.Image);
-        }
-
         public double[,] CalcD(int n)
         {
             double[,] D;
@@ -361,7 +492,21 @@ namespace GK_P3_ColorReduction
             }
             return D;
         }
-
+        
+        public Bitmap OpenImage()
+        {
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.Title = "Open Image";
+                dlg.Filter = "All files (*.*)|*.*";
+                dlg.InitialDirectory = Directory.GetCurrentDirectory();
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    return new Bitmap(dlg.FileName);
+                }
+            }
+            return new Bitmap(WorkImagePB.Image);
+        }
 
         private void LoadImageBtn_Click(object sender, EventArgs e)
         {
